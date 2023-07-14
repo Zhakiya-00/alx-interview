@@ -5,6 +5,7 @@ Given n number of locked boxes, each box numbered sequentially
 from 0 to n - 1, and each box may contain keys to the other boxes.
 """
 
+
 def canUnlockAll(boxes):
     """
     Determines if all the boxes can be opened.
@@ -16,7 +17,7 @@ def canUnlockAll(boxes):
     - True if all the boxes can be opened, False otherwise.
     """
     if not boxes or type(boxes) is not list:
-         # Invalid input
+        # Invalid input
         return False
 
     unlocked = [0]  # List of unlocked boxes
