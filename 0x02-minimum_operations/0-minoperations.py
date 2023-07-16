@@ -19,4 +19,4 @@ def minOperations(n):
             operations += num_chars
             num_chars = 1
         num_chars += 1
-    return operations 
+    return operations
