@@ -1,43 +1,48 @@
 #!/usr/bin/python3
-"""Log Parser"""
+"""
+module contains a script that reads stdin line by line and computes metrics
+"""
 import sys
 
 
-if __name__ == '__main__':
-    file_size = [0]
-    status_codes = {200: 0, 301: 0, 400: 0, 401: 0,
-                    403: 0, 404: 0, 405: 0, 500: 0}
+status_codes = {
+    "200": 0,
+    "301": 0,
+    "400": 0,
+    "401": 0,
+    "403": 0,
+    "404": 0,
+    "405": 0,
+    "500": 0
+}
 
-    def print_stats():
-        """ Print statistics """
-        print('File size: {}'.format(file_size[0]))
-        for key in sorted(status_codes.keys()):
-            if status_codes[key]:
-                print('{}: {}'.format(key, status_codes[key]))
+file_size = 0
 
-    def parse_line(line):
-        """ Checks the line for matches """
-        try:
-            line = line[:-1]
-            word = line.split(' ')
-            # File size is last parameter on stdout
-            file_size[0] += int(word[-1])
-            # Status code comes before file size
-            status_code = int(word[-2])
-            # Move through dictionary of status codes
-            if status_code in status_codes:
-                status_codes[status_code] += 1
-        except BaseException:
-            pass
 
-    linenum = 1
+def print_metrics():
+    """prints of the logs"""
+    print("File size: {}".format(file_size))
+    for status in sorted(status_codes.keys()):
+        if status_codes[status]:
+            print("{}: {}".format(status, status_codes[status]))
+
+
+if __name__ == "__main__":
+    count = 0
     try:
         for line in sys.stdin:
-            parse_line(line)
-            if linenum % 10 == 0:
-                print_stats()
-            linenum += 1
+            try:
+                elems = line.split()
+                file_size += int(elems[-1])
+                if elems[-2] in status_codes:
+                    status_codes[elems[-2]] += 1
+            except Exception:
+                pass
+            if count == 9:
+                print_metrics()
+                count = -1
+            count += 1
     except KeyboardInterrupt:
-        print_stats()
+        print_metrics()
         raise
-    print_stats()
+    print_metrics()
