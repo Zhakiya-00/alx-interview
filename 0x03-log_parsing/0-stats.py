@@ -1,49 +1,43 @@
 #!/usr/bin/python3
-"""
-Task: 0. Log Parsing
-File: 0x06-log_parsing/0-stats.py
-"""
-from sys import stdin
+"""Log Parser"""
+import sys
 
 
-def printstats(file_size, status_codes):
-    """
-    This prints statistics at the beginning and every 10 lines
-    This will also be called on a Keyboard interruption
-    """
-    print("File size: " + str(file_size))
-    for code in sorted(status_codes.keys()):
-        if status_codes[code] > 0:
-            print(code + ": " + str(status_codes[code]))
+if __name__ == '__main__':
+    file_size = [0]
+    status_codes = {200: 0, 301: 0, 400: 0, 401: 0,
+                    403: 0, 404: 0, 405: 0, 500: 0}
 
+    def print_stats():
+        """ Print statistics """
+        print('File size: {}'.format(file_size[0]))
+        for key in sorted(status_codes.keys()):
+            if status_codes[key]:
+                print('{}: {}'.format(key, status_codes[key]))
 
-line_num = 0
-file_size = 0
-status_code = 0
-status_codes = {"200": 0, "301": 0, "400": 0, "401": 0,
-                "403": 0, "404": 0, "405": 0, "500": 0}
+    def parse_line(line):
+        """ Checks the line for matches """
+        try:
+            line = line[:-1]
+            word = line.split(' ')
+            # File size is last parameter on stdout
+            file_size[0] += int(word[-1])
+            # Status code comes before file size
+            status_code = int(word[-2])
+            # Move through dictionary of status codes
+            if status_code in status_codes:
+                status_codes[status_code] += 1
+        except BaseException:
+            pass
 
-try:
-    for line in stdin:
-        line_num += 1
-        split_line = line.split()
-
-        if len(split_line) > 1:
-            file_size += int(split_line[-1])
-
-        if len(split_line) > 2 and split_line[-2].isnumeric():
-            status_code = split_line[-2]
-        else:
-            status_code = 0
-
-        if status_code in status_codes.keys():
-            status_codes[status_code] += 1
-
-        if line_num % 10 == 0:
-            printstats(file_size, status_codes)
-
-    printstats(file_size, status_codes)
-
-except (KeyboardInterrupt):
-    printstats(file_size, status_codes)
-    raise
+    linenum = 1
+    try:
+        for line in sys.stdin:
+            parse_line(line)
+            if linenum % 10 == 0:
+                print_stats()
+            linenum += 1
+    except KeyboardInterrupt:
+        print_stats()
+        raise
+    print_stats()
