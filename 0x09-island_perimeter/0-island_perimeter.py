@@ -1,44 +1,79 @@
 #!/usr/bin/python3
+"""
+Define island_perimeter function that finds the perimeter
+of an island in a body of water
+"""
 
-""" Function to find perimiter of an island """
+bound_4 = set()
+bound_3 = set()
+bound_2 = set()
+bound_1 = set()
+
+
+def boundary(grid, i, j):
+    """Find cells with either 4, 3, 2 or 1 exposed boundary and add them to
+       appropriate set
+       Args:
+           grid (list): 2d list
+           i (int): row number
+           j (int): column number
+    """
+    boundaries = 0
+    try:
+        if i == 0:
+            boundaries += 1
+        elif grid[i-1][j] == 0:
+            boundaries += 1
+    except:
+        boundaries += 1
+    try:
+        if grid[i+1][j] == 0:
+            boundaries += 1
+    except:
+        boundaries += 1
+    try:
+        if grid[i][j+1] == 0:
+            boundaries += 1
+    except:
+        boundaries += 1
+    try:
+        if j == 0:
+            boundaries += 1
+        elif grid[i][j-1] == 0:
+            boundaries += 1
+    except:
+        boundaries += 1
+
+    if boundaries == 1:
+        bound_1.add((i, j))
+    elif boundaries == 2:
+        bound_2.add((i, j))
+    elif boundaries == 3:
+        bound_3.add((i, j))
+    elif boundaries == 4:
+        bound_4.add((i, j))
 
 
 def island_perimeter(grid):
-    """Getting the perimeter of island
-
-    Args:
-        grid (_type_): the grid containing
-        the island
     """
-    def dfs(r, c):
-        """
-        Purpose: Function that calculates horizontal and vertical connections.
-        """
-        # Check and explore the four neighboring cells
-        if r < 0 or r >= nr or c < 0 or c >= nc or grid[r][c] == 0:
-            return 1  # If out of bounds or water, count as perimeter
-
-        if grid[r][c] == -1:
-            return 0  # If already visited, no additional perimeter
-
-        grid[r][c] = -1  # Mark cell as visited
-
-        perimeter = (
-            dfs(r - 1, c)
-            + dfs(r + 1, c)
-            + dfs(r, c - 1)
-            + dfs(r, c + 1)
-        )
-
-        return perimeter
-
-    nr = len(grid)
-    if nr == 0:
+    Calculate and return perimeter of island in the grid
+    Grid is a rectangular grid where 0s represent water and 1s represent land
+    Each cell is a square with a side length of 1
+    There is only one island
+    Args:
+        grid [list] : 2d list of ints either 0 or 1
+    Return:
+       perimeter of island
+    """
+    if grid == []:
         return 0
-    nc = len(grid[0])
-    per_island = 0
-    for r in range(nr):
-        for c in range(nc):
-            if grid[r][c] == 1:
-                per_island += dfs(r, c)
-    return per_island
+    l = len(grid)
+    w = len(grid[0])
+    for i in range(l):
+        for j in range(w):
+            if grid[i][j] == 1:
+                boundary(grid, i, j)
+                if len(bound_4) != 0:
+                    return 4
+    perimeter = (len(bound_3) * 3) + (len(bound_2) * 2) + (len(bound_1))
+    return perimeter
